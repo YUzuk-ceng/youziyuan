@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive English Learning Platform">
+    <title>English Learning Hub</title>
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #87CEEB;  /* Main light blue color */
+            --primary-dark: #5F9EA0;   /* Darker shade for contrast */
+            --primary-light: #E6F7FF;  /* Very light shade for backgrounds */
+            --text-color: #333;
+            --text-light: #666;
+            --correct-color: #4CAF50; /* Green for correct answers */
+            --incorrect-color: #F44336; /* Red for incorrect answers */
+            --white: #FFFFFF;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+        }
+
+        body {
+            background-color: var(--primary-light);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Main Content Layout */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-title {
+            color: var(--primary-dark);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        /* Card Layout for Sections */
+        .section-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Common Form Styles */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(135, 206, 235, 0.2);
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Audio Player Styles */
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .audio-controls button {
+            padding: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Feedback Messages */
+        .feedback {
+            margin-top: 1rem;
+            padding: 0.8rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            display: none;
+        }
+
+        .correct {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--correct-color);
+            border: 1px solid var(--correct-color);
+            display: block;
+        }
+
+        .incorrect {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--incorrect-color);
+            border: 1px solid var(--incorrect-color);
+            display: block;
+        }
+
+        /* Conversation Simulation Styles */
+        .conversation-container {
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+
+        .message {
+            margin-bottom: 0.8rem;
+            padding: 0.8rem;
+            border-radius: var(--border-radius);
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .bot-message {
+            background-color: var(--primary-color);
+            color: var(--white);
+            align-self: flex-start;
+            margin-right: auto;
+        }
+
+        .user-message {
+            background-color: var(--primary-light);
+            color: var(--text-color);
+            align-self: flex-end;
+            margin-left: auto;
+            border: 1px solid var(--primary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .section-card {
+                padding: 1rem;
+            }
+            
+            .audio-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            button {
+                width: 100%;
+                padding: 1rem;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+        }
+
+        /* Animation for feedback */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Loading optimization */
+        .lazy-load {
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .lazy-load.loaded {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>English Learning Hub</h1>
+        <p class="subtitle">Improve your English skills with interactive exercises</p>
+    </header>
+
+    <main class="container">
+        <!-- Word Spelling Section -->
+        <section class="section-card lazy-load" id="word-spelling">
+            <h2 class="section-title">Word Spelling Practice</h2>
+            <p>Listen to the word and try to spell it correctly.</p>
+            
+            <div class="form-group">
+                <label for="spelling-audio">Current Word:</label>
+                <div class="audio-controls">
+                    <audio id="spelling-audio" controls>
+                        <source src="" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div class="speed-control">
+                        <label for="spelling-speed">Speed:</label>
+                        <select id="spelling-speed">
+                            <option value="0.5">0.5x</option>
+                            <option value="0.75">0.75x</option>
+                            <option value="1" selected>1x</option>
+                            <option value="1.25">1.25x</option>
+                            <option value="1.5">1.5x</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="spelling-answer">Your Spelling:</label>
+                <input type="text" id="spelling-answer" placeholder="Type the word you hear">
+            </div>
+            
+            <button id="check-spelling">Check Answer</button>
+            <button id="next-spelling">Next Word</button>
+            
+            <div id="spelling-feedback" class="feedback"></div>
+        </section>
+
+        <!-- Listening Exercise Section -->
+        <section class="section-card lazy-load" id="listening-exercise">
+            <h2 class="section-title">Listening Comprehension</h2>
+            <p>Listen to the sentence and answer the question below.</p>
+            
+            <div class="form-group">
+                <label for="listening-audio">Audio Clip:</label>
+                <div class="audio-controls">
+                    <audio id="listening-audio" controls>
+                        <source src="" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <div class="speed-control">
+                        <label for="listening-speed">Speed:</label>
+                        <select id="listening-speed">
+                            <option value="0.5">0.5x</option>
+                            <option value="0.75">0.75x</option>
+                            <option value="1" selected>1x</option>
+                            <option value="1.25">1.25x</option>
+                            <option value="1.5">1.5x</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="listening-question">Question:</label>
+                <p id="listening-question-text">Loading question...</p>
+            </div>
+            
+            <div class="form-group">
+                <label for="listening-answer">Your Answer:</label>
+                <textarea id="listening-answer" rows="3" placeholder="Write your answer here"></textarea>
+            </div>
+            
+            <button id="check-listening">Check Answer</button>
+            <button id="next-listening">Next Exercise</button>
+            
+            <div id="listening-feedback" class="feedback"></div>
+        </section>
+
+        <!-- Conversation Simulation Section -->
+        <section class="section-card lazy-load" id="conversation-sim">
+            <h2 class="section-title">Conversation Simulation</h2>
+            <p>Practice having a conversation in English. The bot will start the conversation.</p>
+            
+            <div class="conversation-container" id="conversation-display">
+                <!-- Messages will appear here -->
+            </div>
+            
+            <div class="form-group">
+                <label for="user-response">Your Response:</label>
+                <input type="text" id="user-response" placeholder="Type your response here">
+            </div>
+            
+            <button id="send-response">Send</button>
+            <button id="reset-conversation">Start New Conversation</button>
+        </section>
+    </main>
+
+    <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Trigger lazy loading animation
+            setTimeout(() => {
+                const lazyElements = document.querySelectorAll('.lazy-load');
+                lazyElements.forEach(el => el.classList.add('loaded'));
+            }, 100);
+
+            // Word Spelling Section Logic
+            const spellingSection = {
+                audio: document.getElementById('spelling-audio'),
+                answerInput: document.getElementById('spelling-answer'),
+                checkBtn: document.getElementById('check-spelling'),
+                nextBtn: document.getElementById('next-spelling'),
+                feedback: document.getElementById('spelling-feedback'),
+                speedControl: document.getElementById('spelling-speed'),
+                currentWord: '',
+                words: [
+                    { word: 'beautiful', audio: 'https://www.myinstants.com/media/sounds/beautiful.mp3' },
+                    { word: 'education', audio: 'https://www.myinstants.com/media/sounds/education.mp3' },
+                    { word: 'happiness', audio: 'https://www.myinstants.com/media/sounds/happiness.mp3' },
+                    { word: 'important', audio: 'https://www.myinstants.com/media/sounds/important.mp3' },
+                    { word: 'knowledge', audio: 'https://www.myinstants.com/media/sounds/knowledge.mp3' }
+                ],
+                currentIndex: 0,
+
+                init: function() {
+                    this.loadWord();
+                    this.setupEventListeners();
+                },
+
+                loadWord: function() {
+                    this.currentWord = this.words[this.currentIndex].word;
+                    this.audio.src = this.words[this.currentIndex].audio;
+                    this.answerInput.value = '';
+                    this.feedback.style.display = 'none';
+                    this.answerInput.focus();
+                },
+
+                setupEventListeners: function() {
+                    this.checkBtn.addEventListener('click', () => this.checkAnswer());
+                    this.nextBtn.addEventListener('click', () => this.nextWord());
+                    this.speedControl.addEventListener('change', () => {
+                        this.audio.playbackRate = parseFloat(this.speedControl.value);
+                    });
+                    this.answerInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') this.checkAnswer();
+                    });
+                },
+
+                checkAnswer: function() {
+                    const userAnswer = this.answerInput.value.trim().toLowerCase();
+                    if (userAnswer === '') {
+                        this.feedback.textContent = 'Please enter your answer first.';
+                        this.feedback.className = 'feedback incorrect';
+                        this.feedback.style.display = 'block';
+                        return;
+                    }
+
+                    if (userAnswer === this.currentWord) {
+                        this.feedback.textContent = 'Correct! Well done!';
+                        this.feedback.className = 'feedback correct';
+                    } else {
+                        this.feedback.textContent = `Incorrect. The correct spelling is "${this.currentWord}".`;
+                        this.feedback.className = 'feedback incorrect';
+                    }
+                    this.feedback.style.display = 'block';
+                },
+
+                nextWord: function() {
+                    this.currentIndex = (this.currentIndex + 1) % this.words.length;
+                    this.loadWord();
+                }
+            };
+
+            // Listening Exercise Section Logic
+            const listeningSection = {
+                audio: document.getElementById('listening-audio'),
+                questionText: document.getElementById('listening-question-text'),
+                answerInput: document.getElementById('listening-answer'),
+                checkBtn: document.getElementById('check-listening'),
+                nextBtn: document.getElementById('next-listening'),
+                feedback: document.getElementById('listening-feedback'),
+                speedControl: document.getElementById('listening-speed'),
+                exercises: [
+                    {
+                        audio: 'https://www.myinstants.com/media/sounds/daily-routine.mp3',
+                        question: 'What time does the speaker usually wake up?',
+                        answer: '7 o\'clock'
+                    },
+                    {
+                        audio: 'https://www.myinstants.com/media/sounds/favorite-food.mp3',
+                        question: 'What is the speaker\'s favorite food?',
+                        answer: 'pizza'
+                    },
+                    {
+                        audio: 'https://www.myinstants.com/media/sounds/weekend-plans.mp3',
+                        question: 'Where is the speaker going this weekend?',
+                        answer: 'the beach'
+                    },
+                    {
+                        audio: 'https://www.myinstants.com/media/sounds/family-members.mp3',
+                        question: 'How many brothers and sisters does the speaker have?',
+                        answer: 'two brothers and one sister'
+                    },
+                    {
+                        audio: 'https://www.myinstants.com/media/sounds/hobbies.mp3',
+                        question: 'What are the speaker\'s two main hobbies?',
+                        answer: 'reading and playing tennis'
+                    }
+                ],
+                currentIndex: 0,
+
+                init: function() {
+                    this.loadExercise();
+                    this.setupEventListeners();
+                },
+
+                loadExercise: function() {
+                    const exercise = this.exercises[this.currentIndex];
+                    this.audio.src = exercise.audio;
+                    this.questionText.textContent = exercise.question;
+                    this.answerInput.value = '';
+                    this.feedback.style.display = 'none';
+                },
+
+                setupEventListeners: function() {
+                    this.checkBtn.addEventListener('click', () => this.checkAnswer());
+                    this.nextBtn.addEventListener('click', () => this.nextExercise());
+                    this.speedControl.addEventListener('change', () => {
+                        this.audio.playbackRate = parseFloat(this.speedControl.value);
+                    });
+                    this.answerInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') this.checkAnswer();
+                    });
+                },
+
+                checkAnswer: function() {
+                    const userAnswer = this.answerInput.value.trim().toLowerCase();
+                    const correctAnswer = this.exercises[this.currentIndex].answer.toLowerCase();
+                    
+                    if (userAnswer === '') {
+                        this.feedback.textContent = 'Please enter your answer first.';
+                        this.feedback.className = 'feedback incorrect';
+                        this.feedback.style.display = 'block';
+                        return;
+                    }
+
+                    // Simple answer checking (could be enhanced with more sophisticated matching)
+                    if (userAnswer.includes(correctAnswer) || correctAnswer.includes(userAnswer)) {
+                        this.feedback.textContent = 'Correct! Good listening skills!';
+                        this.feedback.className = 'feedback correct';
+                    } else {
+                        this.feedback.textContent = `Incorrect. The answer is "${this.exercises[this.currentIndex].answer}".`;
+                        this.feedback.className = 'feedback incorrect';
+                    }
+                    this.feedback.style.display = 'block';
+                },
+
+                nextExercise: function() {
+                    this.currentIndex = (this.currentIndex + 1) % this.exercises.length;
+                    this.loadExercise();
+                }
+            };
+
+            // Conversation Simulation Section Logic
+            const conversationSection = {
+                display: document.getElementById('conversation-display'),
+                responseInput: document.getElementById('user-response'),
+                sendBtn: document.getElementById('send-response'),
+                resetBtn: document.getElementById('reset-conversation'),
+                conversation: [],
+                scenarios: [
+                    {
+                        starter: 'Hello! How are you today?',
+                        responses: [
+                            { input: /good|great|fine|well/i, reply: 'That\'s wonderful to hear! What have you been up to lately?' },
+                            { input: /bad|not good|terrible/i, reply: 'I\'m sorry to hear that. Is there anything I can do to help?' },
+                            { input: /.*/, reply: 'Interesting! Tell me more about how you\'re feeling.' }
+                        ]
+                    },
+                    {
+                        starter: 'What do you like to do in your free time?',
+                        responses: [
+                            { input: /read|book/i, reply: 'Reading is great! What kind of books do you enjoy?' },
+                            { input: /sport|game|play|run|swim/i, reply: 'I love sports too! Which one is your favorite?' },
+                            { input: /movie|film|tv|watch/i, reply: 'Movies are awesome! What\'s your favorite genre?' },
+                            { input: /.*/, reply: 'That sounds interesting! How did you get into that?' }
+                        ]
+                    },
+                    {
+                        starter: 'Have you traveled anywhere interesting recently?',
+                        responses: [
+                            { input: /yes|yeah|sure/i, reply: 'That\'s exciting! Where did you go?' },
+                            { input: /no|not yet/i, reply: 'No worries! Is there somewhere you\'d love to visit?' },
+                            { input: /.*/, reply: 'Traveling can be so enriching. What\'s your dream destination?' }
+                        ]
+                    }
+                ],
+                currentScenario: 0,
+
+                init: function() {
+                    this.startConversation();
+                    this.setupEventListeners();
+                },
+
+                startConversation: function() {
+                    this.conversation = [];
+                    this.display.innerHTML = '';
+                    this.currentScenario = Math.floor(Math.random() * this.scenarios.length);
+                    this.addBotMessage(this.scenarios[this.currentScenario].starter);
+                    this.responseInput.focus();
+                },
+
+                addBotMessage: function(text) {
+                    this.conversation.push({ sender: 'bot', text });
+                    this.updateDisplay();
+                },
+
+                addUserMessage: function(text) {
+                    this.conversation.push({ sender: 'user', text });
+                    this.updateDisplay();
+                },
+
+                updateDisplay: function() {
+                    this.display.innerHTML = '';
+                    this.conversation.forEach(msg => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.classList.add('message');
+                        messageDiv.classList.add(msg.sender === 'bot' ? 'bot-message' : 'user-message');
+                        messageDiv.textContent = msg.text;
+                        this.display.appendChild(messageDiv);
+                    });
+                    this.display.scrollTop = this.display.scrollHeight;
+                },
+
+                processResponse: function() {
+                    const userText = this.responseInput.value.trim();
+                    if (!userText) return;
+
+                    this.addUserMessage(userText);
+                    this.responseInput.value = '';
+
+                    // Find matching response
+                    const scenario = this.scenarios[this.currentScenario];
+                    let reply = '';
+                    
+                    for (const response of scenario.responses) {
+                        if (response.input.test(userText)) {
+                            reply = response.reply;
+                            break;
+                        }
+                    }
+
+                    // Simulate typing delay
+                    setTimeout(() => {
+                        this.addBotMessage(reply);
+                    }, 800);
+                },
+
+                setupEventListeners: function() {
+                    this.sendBtn.addEventListener('click', () => this.processResponse());
+                    this.resetBtn.addEventListener('click', () => this.startConversation());
+                    this.responseInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') this.processResponse();
+                    });
+                }
+            };
+
+            // Initialize all sections
+            spellingSection.init();
+            listeningSection.init();
+            conversationSection.init();
+
+            // Set default playback rates
+            spellingSection.audio.playbackRate = parseFloat(spellingSection.speedControl.value);
+            listeningSection.audio.playbackRate = parseFloat(listeningSection.speedControl.value);
+        });
+    </script>
+</body>
+</html>
